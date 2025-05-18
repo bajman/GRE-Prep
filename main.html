@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRE Quantitative & Verbal Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            font-weight: 600;
+        }
+        .nav-button:hover:not(.active) {
+            background-color: #e0e7ff; /* Lighter Indigo */
+        }
+        .content-section {
+            display: none; /* Hidden by default */
+        }
+        .content-section.active {
+            display: block;
+        }
+        .question-card {
+            background-color: white;
+            padding: 1.5rem; /* Adjusted padding */
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        .answer-explanation {
+            background-color: #eef2ff; /* Indigo-50 */
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid #4f46e5; /* Indigo-600 */
+        }
+        .strategy-section {
+            background-color: #e0e7ff; /* Indigo-100 */
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid #4338ca; /* Indigo-700 */
+        }
+        .strategy-section h3 {
+            color: #3730a3; /* Indigo-800 */
+        }
+        .action-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .action-button:hover {
+            background-color: #4338ca;
+        }
+        .secondary-button {
+            background-color: #6b7280;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .secondary-button:hover {
+            background-color: #4b5563;
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .option-button:hover {
+            background-color: #e0e7ff;
+            border-color: #a5b4fc;
+        }
+        .option-button.selected {
+            background-color: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        .option-button.correct {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        .option-button.incorrect {
+            background-color: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+        
+        /* Quantitative Section Layout */
+        .quantitative-layout {
+            display: flex;
+            flex-direction: column; /* Default for mobile */
+            gap: 1.5rem;
+        }
+        .quantitative-main-content {
+            flex: 1; /* Takes available space */
+        }
+        .calculator-panel {
+            background-color: #e2e8f0; /* slate-200 */
+            border-radius: 0.75rem; /* 12px */
+            padding: 1rem; /* 16px */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.06);
+            width: 100%; /* Full width on mobile */
+            max-width: 320px;
+            margin-left: auto; /* For centering if not full width */
+            margin-right: auto;
+            display: none; /* Hidden by default */
+        }
+
+        @media (min-width: 768px) { /* md breakpoint for side-by-side */
+            .quantitative-layout {
+                flex-direction: row;
+            }
+            .quantitative-main-content {
+                flex: 2; /* Questions take more space */
+            }
+            .calculator-panel {
+                flex: 1; /* Calculator takes less space */
+                max-width: 320px; /* Maintain max width */
+                margin-left: 0; /* Align to right when side-by-side */
+            }
+        }
+
+        .calculator-panel.visible {
+            display: block;
+        }
+        .calculator-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .calculator-panel-title {
+            font-size: 1.25rem; /* 20px */
+            font-weight: 600;
+            color: #1e293b; /* slate-800 */
+        }
+
+        .calculator-display {
+            background-color: #ffffff;
+            color: #1f2937; /* gray-800 */
+            font-size: 1.75rem; /* Adjusted for panel */
+            padding: 0.5rem 0.75rem; 
+            text-align: right;
+            border-radius: 0.375rem; 
+            margin-bottom: 0.75rem; 
+            overflow-x: auto; 
+            min-height: 50px; 
+            border: 1px solid #cbd5e1; 
+        }
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.375rem; /* 6px */
+        }
+        .calculator-button {
+            background-color: #f8fafc; 
+            color: #334155; 
+            border: 1px solid #cbd5e1; 
+            padding: 0.75rem 0.25rem; /* Adjusted padding */
+            font-size: 1rem; /* Adjusted font size */
+            border-radius: 0.375rem; 
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .calculator-button:hover {
+            background-color: #f1f5f9; 
+        }
+        .calculator-button.operator {
+            background-color: #fbbf24; 
+            color: #78350f; 
+        }
+        .calculator-button.operator:hover {
+            background-color: #f59e0b; 
+        }
+        .calculator-button.memory {
+            background-color: #93c5fd; 
+            color: #1e40af; 
+        }
+        .calculator-button.memory:hover {
+            background-color: #60a5fa; 
+        }
+        .calculator-button.equals {
+            background-color: #4ade80; 
+            color: #14532d; 
+            grid-column: span 2;
+        }
+        .calculator-button.equals:hover {
+            background-color: #22c55e; 
+        }
+         .calculator-button.clear {
+            background-color: #f87171; 
+            color: #7f1d1d; 
+        }
+        .calculator-button.clear:hover {
+            background-color: #ef4444; 
+        }
+        .open-calculator-btn-container {
+            text-align: center; /* Center the button */
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl"> 
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-indigo-700">GRE Quantitative & Verbal Assistant</h1>
+            <p class="text-lg text-gray-600 mt-2">Your comprehensive tool to ace the GRE!</p>
+        </header>
+
+        <nav class="bg-white shadow-md rounded-lg p-2 mb-8 flex flex-wrap justify-center gap-2">
+            <button data-target="home" class="nav-button active px-4 py-2 rounded-md text-sm md:text-base">Home</button>
+            <button data-target="quantitative" class="nav-button px-4 py-2 rounded-md text-sm md:text-base">Quantitative Reasoning</button>
+            <button data-target="verbal" class="nav-button px-4 py-2 rounded-md text-sm md:text-base">Verbal Reasoning</button>
+        </nav>
+
+        <main id="content-area">
+            <section id="home" class="content-section active question-card">
+                <h2 class="text-2xl font-semibold text-indigo-600 mb-4">Welcome to Your GRE Prep Hub!</h2>
+                <p class="text-gray-700 mb-3">This tool is designed to help you prepare for the GRE General Test, focusing on Quantitative and Verbal Reasoning.</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                    <li><strong>Quantitative Reasoning:</strong> Sharpen your math skills with practice problems, an in-app calculator, and ETS problem-solving strategies. The calculator can be toggled to appear on the right side.</li>
+                    <li><strong>Verbal Reasoning:</strong> Enhance your language and comprehension abilities with Text Completion and Sentence Equivalence questions.</li>
+                </ul>
+                <p class="text-gray-700">Navigate using the buttons above. Consistent practice is key to success. Good luck!</p>
+            </section>
+
+            <section id="quantitative" class="content-section">
+                <h2 class="text-2xl font-semibold text-indigo-600 mb-6 text-center">Quantitative Reasoning Practice</h2>
+                
+                <div class="open-calculator-btn-container">
+                    <button id="toggle-calculator-button" class="action-button">🧮 Show Calculator</button>
+                </div>
+                
+                <div class="quantitative-layout">
+                    <div class="quantitative-main-content">
+                        <div id="quant-question-container" class="question-card">
+                            <p id="quant-question-type" class="text-sm font-semibold text-indigo-500 mb-2"></p>
+                            <div id="quant-comparison-quantities" class="mb-4">
+                                <p id="quant-quantity-a" class="text-md text-gray-700"></p>
+                                <p id="quant-quantity-b" class="text-md text-gray-700"></p>
+                            </div>
+                            <p id="quant-question-text" class="text-lg text-gray-800 mb-4">Question text will appear here.</p>
+                            <div id="quant-options-container" class="space-y-2 mb-4">
+                                </div>
+                            <p id="quant-instructions" class="text-sm text-gray-500 mb-4"></p>
+                        </div>
+                        <div class="flex justify-center items-center space-x-4 mb-4">
+                            <button id="prev-quant-question" class="secondary-button">&larr; Previous</button>
+                            <button id="submit-quant-answer" class="action-button">Submit Answer</button>
+                            <button id="next-quant-question" class="secondary-button">Next &rarr;</button>
+                        </div>
+                        <div id="quant-feedback" class="text-center font-medium p-2 rounded-md mb-4"></div>
+                        <div id="quant-explanation-container" class="answer-explanation hidden">
+                            <h3 class="text-lg font-semibold text-indigo-700 mb-2">Explanation:</h3>
+                            <p id="quant-explanation-text" class="text-gray-700"></p>
+                        </div>
+                        <p id="quant-progress" class="text-center text-gray-600 mt-4"></p>
+        
+                        <div id="quant-strategies-container" class="strategy-section mt-8">
+                            <h2 class="text-xl font-semibold text-indigo-700 mb-4">GRE Quantitative Reasoning: Problem-Solving Approach</h2>
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-2">Three Basic Steps:</h3>
+                                <ol class="list-decimal list-inside text-gray-700 space-y-1">
+                                    <li><strong>Understand the Problem:</strong> Carefully read and comprehend all given information.</li>
+                                    <li><strong>Carry Out a Strategy:</strong> Develop a plan. Be flexible.</li>
+                                    <li><strong>Check Your Answer:</strong> Ensure it's reasonable and computationally correct.</li>
+                                </ol>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Key Problem-Solving Strategies:</h3>
+                                <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                    <li>Translate Words to Math</li>
+                                    <li>Draw Figures/Diagrams</li>
+                                    <li>Graphical Representation</li>
+                                    <li>Translate Figures to Math</li>
+                                    <li>Simplify Expressions/Equations</li>
+                                    <li>Add to Geometric Figures</li>
+                                    <li>Find a Pattern</li>
+                                    <li>Search for Mathematical Relationships</li>
+                                    <li>Estimate</li>
+                                    <li>Trial and Error</li>
+                                    <li>Divide into Cases</li>
+                                    <li>Adapt Solutions</li>
+                                    <li>Check Logical Conclusions</li>
+                                    <li>Identify Missing Information</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="calculator-panel" class="calculator-panel">
+                        <div class="calculator-panel-header">
+                            <h3 class="calculator-panel-title">Calculator</h3>
+                        </div>
+                        <div id="calculator-display" class="calculator-display">0</div>
+                        <div class="calculator-buttons">
+                            <button class="calculator-button memory" data-action="memory-clear">MC</button>
+                            <button class="calculator-button memory" data-action="memory-recall">MR</button>
+                            <button class="calculator-button memory" data-action="memory-add">M+</button>
+                            <button class="calculator-button memory" data-action="memory-subtract">M−</button>
+    
+                            <button class="calculator-button" data-action="parenthesis" data-value="(">(</button>
+                            <button class="calculator-button" data-action="parenthesis" data-value=")">)</button>
+                            <button class="calculator-button" data-action="negate">+/−</button>
+                            <button class="calculator-button operator" data-action="operator" data-value="sqrt">√</button>
+                            
+                            <button class="calculator-button" data-action="number" data-value="7">7</button>
+                            <button class="calculator-button" data-action="number" data-value="8">8</button>
+                            <button class="calculator-button" data-action="number" data-value="9">9</button>
+                            <button class="calculator-button operator" data-action="operator" data-value="/">÷</button>
+                            
+                            <button class="calculator-button" data-action="number" data-value="4">4</button>
+                            <button class="calculator-button" data-action="number" data-value="5">5</button>
+                            <button class="calculator-button" data-action="number" data-value="6">6</button>
+                            <button class="calculator-button operator" data-action="operator" data-value="*">×</button>
+                            
+                            <button class="calculator-button" data-action="number" data-value="1">1</button>
+                            <button class="calculator-button" data-action="number" data-value="2">2</button>
+                            <button class="calculator-button" data-action="number" data-value="3">3</button>
+                            <button class="calculator-button operator" data-action="operator" data-value="-">−</button>
+                            
+                            <button class="calculator-button" data-action="number" data-value="0">0</button>
+                            <button class="calculator-button" data-action="decimal" data-value=".">.</button>
+                            <button class="calculator-button clear" data-action="clear">C</button>
+                            <button class="calculator-button operator" data-action="operator" data-value="+">+</button>
+                            
+                            <button class="calculator-button equals" data-action="calculate">=</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="verbal" class="content-section">
+                <h2 class="text-2xl font-semibold text-indigo-600 mb-6 text-center">Verbal Reasoning Practice</h2>
+                <div id="verbal-question-container" class="question-card">
+                    <p id="verbal-question-type" class="text-sm font-semibold text-indigo-500 mb-2"></p>
+                    <p id="verbal-question-text" class="text-lg text-gray-800 mb-4">Verbal question text will appear here.</p>
+                    <div id="verbal-options-container" class="space-y-2 mb-4">
+                        </div>
+                </div>
+                 <div class="flex justify-center items-center space-x-4 mb-4">
+                    <button id="prev-verbal-question" class="secondary-button">&larr; Previous</button>
+                    <button id="submit-verbal-answer" class="action-button">Submit Answer</button>
+                    <button id="next-verbal-question" class="secondary-button">Next &rarr;</button>
+                </div>
+                <div id="verbal-feedback" class="text-center font-medium p-2 rounded-md mb-4"></div>
+                <div id="verbal-explanation-container" class="answer-explanation hidden">
+                    <h3 class="text-lg font-semibold text-indigo-700 mb-2">Explanation:</h3>
+                    <p id="verbal-explanation-text" class="text-gray-700"></p>
+                </div>
+                <p id="verbal-progress" class="text-center text-gray-600 mt-4"></p>
+            </section>
+
+        </main>
+
+        <footer class="mt-12 pt-8 border-t border-gray-300 text-center">
+            <p class="text-gray-600">&copy; <span id="currentYear"></span> GRE Quantitative & Verbal Assistant. Happy Studying!</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const quantitativeData = [
+            // Original 5 Questions
+            {
+                questionText: "The average (arithmetic mean) high temperature for x days is 70 degrees. The addition of one day with a high temperature of 75 degrees increases the average to 71 degrees. What is the value of x?",
+                type: "multiple_choice",
+                options: ["2", "3", "4", "5", "6"],
+                correctAnswer: "4",
+                explanation: "If the average high temperature for x days is 70 degrees, then the sum of those x high temperatures is 70x. The sum of the high temperatures, including the additional day that has a temperature of 75 degrees is, therefore, 70x + 75. The new number of days is x + 1. The new average is 71. So, (70x + 75) / (x + 1) = 71. To solve, cross-multiply: 70x + 75 = 71(x + 1) => 70x + 75 = 71x + 71. Next, simplify to find that x = 4."
+            },
+            {
+                questionText: "Car S covered a distance of D on a track. Car T covered 25% less distance than Car S had covered on the same track.",
+                type: "quantitative_comparison",
+                quantityA: "The distance covered by Car T",
+                quantityB: "0.75D",
+                options: [
+                    "(A) Quantity A is greater.",
+                    "(B) Quantity B is greater.",
+                    "(C) The two quantities are equal.",
+                    "(D) The relationship cannot be determined from the information given."
+                ],
+                correctAnswer: "(C) The two quantities are equal.",
+                explanation: "Car S covered distance D. Car T covered 25% less than Car S. So, Car T covered D - 0.25D = 0.75D. Quantity A is 0.75D. Quantity B is 0.75D. Thus, the two quantities are equal."
+            },
+            {
+                questionText: "A certain pet store sells only dogs and cats. In March, the store sold twice as many dogs as cats. In April, the store sold twice the number of dogs that it sold in March, and three times the number of cats that it sold in March. If the total number of pets the store sold in March and April combined was 500, how many dogs did the store sell in March?",
+                type: "multiple_choice",
+                options: ["80", "100", "120", "150", "200"],
+                correctAnswer: "100",
+                explanation: "Let C_M be the number of cats sold in March and D_M be the number of dogs sold in March. We are given D_M = 2 * C_M. In April, dogs sold D_A = 2 * D_M = 2 * (2 * C_M) = 4 * C_M. Cats sold in April C_A = 3 * C_M. Total pets = (D_M + C_M) + (D_A + C_A) = 500. Substitute: (2*C_M + C_M) + (4*C_M + 3*C_M) = 500 => 3*C_M + 7*C_M = 500 => 10*C_M = 500 => C_M = 50. Dogs sold in March D_M = 2 * C_M = 2 * 50 = 100."
+            },
+            {
+                questionText: "If P and Q are positive numbers and S is a negative number such that Q + S = 0, which of the following fractions is undefined?",
+                type: "multiple_choice",
+                options: [
+                    "P / (Q + S)", 
+                    "Q / (P + Q)", 
+                    "S / (P - S)", 
+                    "Q / (S - P)", 
+                    "(P + Q) / S"
+                ],
+                correctAnswer: "P / (Q + S)",
+                explanation: "A fraction is undefined if its denominator is zero. We are given Q + S = 0. \nOption 1: P / (Q + S) has denominator Q + S, which is 0. So, this fraction is undefined.\nOption 2: Q / (P + Q). Since P and Q are positive, P + Q > 0. Denominator is not zero.\nOption 3: S / (P - S). Since P is positive and S is negative, P - S is positive (e.g., 3 - (-2) = 5). Denominator is not zero.\nOption 4: Q / (S - P). Since S is negative and P is positive, S - P is negative. Denominator is not zero.\nOption 5: (P + Q) / S. Since S is negative (and non-zero as Q+S=0 and Q is positive implies S=-Q), the denominator is not zero.\nTherefore, only P / (Q + S) is undefined under the given conditions."
+            },
+            {
+                questionText: "A price of a pair of sneakers was $80. On January first, the price increased 20%. After the price increase, an employee bought these sneakers with a 10% employee discount. What price did the employee pay?",
+                type: "multiple_choice",
+                options: ["$70.40", "$86.40", "$88.00", "$96.00", "$76.80"],
+                correctAnswer: "$86.40",
+                explanation: "Original price = $80. Price increase = 20% of $80 = 0.20 * 80 = $16. New price = $80 + $16 = $96. Employee discount = 10% of $96 = 0.10 * 96 = $9.60. Final price paid by employee = $96 - $9.60 = $86.40."
+            },
+            // New "Real-World" Quantitative Questions
+            {
+                questionText: "A bakery sells muffins for $2.50 each. On Tuesday, they sold 120 muffins. If the cost to make each muffin is $0.75, what was the bakery's total profit from muffins on Tuesday?",
+                type: "multiple_choice",
+                options: ["$150", "$180", "$210", "$240", "$300"],
+                correctAnswer: "$210",
+                explanation: "Revenue per muffin = $2.50. Cost per muffin = $0.75. Profit per muffin = $2.50 - $0.75 = $1.75. Total muffins sold = 120. Total profit = Profit per muffin * Total muffins sold = $1.75 * 120 = $210."
+            },
+            {
+                questionText: "A rectangular community garden is 30 feet long and 20 feet wide. If a new pathway 2 feet wide is built around the entire perimeter of the garden, what is the area of the pathway?",
+                type: "multiple_choice",
+                options: ["104 sq ft", "208 sq ft", "216 sq ft", "600 sq ft", "816 sq ft"],
+                correctAnswer: "216 sq ft",
+                explanation: "Original garden area = 30 ft * 20 ft = 600 sq ft. The new length including the pathway = 30 + 2 + 2 = 34 ft. The new width including the pathway = 20 + 2 + 2 = 24 ft. Total area with pathway = 34 ft * 24 ft = 816 sq ft. Area of the pathway = Total area with pathway - Original garden area = 816 sq ft - 600 sq ft = 216 sq ft."
+            },
+            {
+                questionText: "A city's population increased by 10% from 2020 to 2021. If the population in 2021 was 55,000, what was the approximate population in 2020?",
+                type: "multiple_choice",
+                options: ["45,000", "49,500", "50,000", "50,500", "60,500"],
+                correctAnswer: "50,000",
+                explanation: "Let P_2020 be the population in 2020. The population in 2021 is P_2020 * (1 + 0.10) = P_2020 * 1.10. We are given P_2021 = 55,000. So, P_2020 * 1.10 = 55,000. P_2020 = 55,000 / 1.10 = 50,000."
+            },
+            {
+                questionText: "A recipe for a smoothie requires 2 parts banana, 3 parts strawberries, and 1 part yogurt by volume. If a smoothie is made using a total of 3 cups of ingredients, how many cups of strawberries are used?",
+                type: "multiple_choice",
+                options: ["0.5 cups", "1 cup", "1.5 cups", "2 cups", "2.5 cups"],
+                correctAnswer: "1.5 cups",
+                explanation: "The total ratio parts are 2 (banana) + 3 (strawberries) + 1 (yogurt) = 6 parts. The total volume is 3 cups. Each part represents 3 cups / 6 parts = 0.5 cups per part. Strawberries require 3 parts, so the volume of strawberries is 3 parts * 0.5 cups/part = 1.5 cups."
+            },
+             {
+                questionText: "A delivery truck travels from City A to City B at an average speed of 50 miles per hour and returns from City B to City A along the same route at an average speed of 40 miles per hour. If the total travel time for the round trip was 9 hours, what is the distance between City A and City B?",
+                type: "multiple_choice",
+                options: ["180 miles", "200 miles", "220 miles", "225 miles", "250 miles"],
+                correctAnswer: "200 miles",
+                explanation: "Let d be the distance between City A and City B. Time from A to B = d/50. Time from B to A = d/40. Total time = d/50 + d/40 = 9 hours. To solve for d, find a common denominator: (4d + 5d) / 200 = 9. So, 9d / 200 = 9. This means 9d = 1800. Therefore, d = 200 miles."
+            }
+        ];
+        
+        const verbalData = [
+            // Original 3 Questions
+            {
+                type: "Text Completion",
+                question: "Despite the ______ of the data, the researchers were hesitant to draw definitive conclusions, preferring to wait for more comprehensive studies.",
+                blanks: 1,
+                options: [ "(A) paucity", "(B) abundance", "(C) clarity", "(D) ambiguity", "(E) reliability" ],
+                correctAnswer: ["(A) paucity"], 
+                explanation: "The word 'Despite' indicates a contrast. If researchers are hesitant to draw conclusions, it suggests there's a problem with the data. 'Paucity' means scarcity or lack, which fits the context of needing more comprehensive studies."
+            },
+            {
+                type: "Sentence Equivalence",
+                question: "The speaker's _______ tone made it difficult for the audience to take his message seriously, even though his arguments were sound.",
+                options: [ 
+                    "jovial",
+                    "somber",
+                    "flippant",
+                    "earnest",
+                    "facetious",
+                    "grave"
+                ],
+                correctAnswer: ["flippant", "facetious"], 
+                explanation: "The sentence implies the tone was inappropriate for a serious message. 'Flippant' and 'facetious' both mean treating serious issues with deliberately inappropriate humor or lack of respect, fitting the context."
+            },
+            {
+                type: "Text Completion",
+                question: "The artist was known for her (i)______ use of color, often employing vibrant and unexpected shades that (ii)______ the otherwise conventional subject matter.",
+                blanks: 2,
+                options: { 
+                    blank_i: ["(A) conservative", "(B) audacious", "(C) muted"],
+                    blank_ii: ["(D) complemented", "(E) enlivened", "(F) detracted from"]
+                },
+                correctAnswer: ["(B) audacious", "(E) enlivened"],
+                explanation: "For blank (i), 'vibrant and unexpected shades' suggests a bold approach, so 'audacious' (bold, daring) fits. For blank (ii), if the colors are vibrant and audacious, they would likely 'enliven' (make more lively or interesting) conventional subject matter."
+            },
+            // New "Real-World" Verbal Questions
+            {
+                type: "Text Completion",
+                question: "The city council's recent decision to ______ funding for public libraries, citing budget constraints, was met with widespread ______ from residents who rely on these essential community resources.",
+                blanks: 2,
+                options: {
+                    blank_i: ["(A) augment", "(B) curtail", "(C) stabilize"],
+                    blank_ii: ["(D) approbation", "(E) indifference", "(F) dismay"]
+                },
+                correctAnswer: ["(B) curtail", "(F) dismay"],
+                explanation: "If funding is cut due to 'budget constraints,' the appropriate word for blank (i) is 'curtail' (to reduce or restrict). This action would likely cause 'dismay' (consternation and distress) from residents who rely on libraries, fitting blank (ii)."
+            },
+            {
+                type: "Sentence Equivalence",
+                question: "The investigative journalist was praised for her ______ efforts in uncovering the corporate scandal, meticulously gathering evidence over several months.",
+                options: [
+                    "cursory",
+                    "diligent",
+                    "perfunctory",
+                    "assiduous",
+                    "negligent",
+                    "superficial"
+                ],
+                correctAnswer: ["diligent", "assiduous"],
+                explanation: "The phrase 'meticulously gathering evidence over several months' suggests hard work and careful attention. Both 'diligent' (showing care and conscientiousness in one's work) and 'assiduous' (showing great care and perseverance) fit this context."
+            },
+            {
+                type: "Text Completion",
+                question: "Many urban planners argue that ______ green spaces within densely populated cities is not merely an aesthetic concern but a ______ for improving residents' mental and physical well-being.",
+                blanks: 2,
+                options: {
+                    blank_i: ["(A) diminishing", "(B) preserving", "(C) ignoring"],
+                    blank_ii: ["(D) triviality", "(E) prerequisite", "(F) detriment"]
+                },
+                correctAnswer: ["(B) preserving", "(E) prerequisite"],
+                explanation: "The sentence structure suggests a positive action towards green spaces that leads to improved well-being. 'Preserving' green spaces fits blank (i). If it improves well-being, it's a 'prerequisite' (a thing that is required as a prior condition for something else to happen or exist) for that improvement, fitting blank (ii)."
+            },
+             {
+                type: "Sentence Equivalence",
+                question: "Despite the initial ______ of the new software, users quickly found its interface intuitive and its features remarkably powerful.",
+                options: [
+                    "acclaim",
+                    "skepticism",
+                    "enthusiasm",
+                    "disbelief",
+                    "adoption",
+                    "rejection"
+                ],
+                correctAnswer: ["skepticism", "disbelief"],
+                explanation: "The word 'Despite' signals a contrast. If users later found the software intuitive and powerful, their initial reaction must have been negative or doubtful. 'Skepticism' (doubt as to the truth of something) and 'disbelief' (inability or refusal to accept that something is true or real) fit this context."
+            }
+        ];
+
+
+        // --- DOM Elements ---
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+        const currentYearSpan = document.getElementById('currentYear');
+
+        const quantQuestionTypeText = document.getElementById('quant-question-type');
+        const quantQuestionTextEl = document.getElementById('quant-question-text');
+        const quantQuantityAEl = document.getElementById('quant-quantity-a');
+        const quantQuantityBEl = document.getElementById('quant-quantity-b');
+        const quantComparisonQuantitiesEl = document.getElementById('quant-comparison-quantities');
+        const quantOptionsContainer = document.getElementById('quant-options-container');
+        const prevQuantButton = document.getElementById('prev-quant-question');
+        const nextQuantButton = document.getElementById('next-quant-question');
+        const submitQuantButton = document.getElementById('submit-quant-answer');
+        const quantExplanationContainer = document.getElementById('quant-explanation-container');
+        const quantExplanationText = document.getElementById('quant-explanation-text');
+        const quantProgressText = document.getElementById('quant-progress');
+        const quantFeedback = document.getElementById('quant-feedback');
+
+        // Verbal Elements
+        const verbalQuestionType = document.getElementById('verbal-question-type');
+        const verbalQuestionText = document.getElementById('verbal-question-text');
+        const verbalOptionsContainer = document.getElementById('verbal-options-container');
+        const prevVerbalButton = document.getElementById('prev-verbal-question');
+        const nextVerbalButton = document.getElementById('next-verbal-question');
+        const submitVerbalButton = document.getElementById('submit-verbal-answer');
+        const verbalExplanationContainer = document.getElementById('verbal-explanation-container');
+        const verbalExplanationText = document.getElementById('verbal-explanation-text');
+        const verbalProgressText = document.getElementById('verbal-progress');
+        const verbalFeedback = document.getElementById('verbal-feedback');
+
+
+        // Calculator Elements
+        const calculatorPanel = document.getElementById('calculator-panel');
+        const toggleCalculatorButton = document.getElementById('toggle-calculator-button');
+        const calculatorDisplay = document.getElementById('calculator-display');
+        const calculatorButtons = document.querySelectorAll('.calculator-button');
+
+        // --- State Variables ---
+        let currentQuantIndex = 0;
+        let currentVerbalIndex = 0;
+        let selectedQuantOption = null;
+        let selectedVerbalOptions = [];
+
+
+        // Calculator State
+        let currentDisplayValue = '0';
+        let waitingForSecondOperand = false; 
+        let memoryValue = 0;
+        let expressionString = '0'; 
+
+
+        // --- Functions ---
+        function setActiveSection(targetId) {
+            contentSections.forEach(section => section.classList.remove('active'));
+            document.getElementById(targetId)?.classList.add('active');
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.dataset.target === targetId) button.classList.add('active');
+            });
+        }
+
+        function displayQuantQuestion(index) {
+            const question = quantitativeData[index];
+            quantQuestionTypeText.textContent = `Type: ${question.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
+            quantQuestionTextEl.textContent = question.questionText || '';
+            
+            quantOptionsContainer.innerHTML = '';
+            quantComparisonQuantitiesEl.classList.add('hidden'); 
+            quantQuantityAEl.textContent = '';
+            quantQuantityBEl.textContent = '';
+            selectedQuantOption = null;
+
+            if (question.type === "quantitative_comparison") {
+                quantComparisonQuantitiesEl.classList.remove('hidden');
+                quantQuantityAEl.innerHTML = `<strong>Quantity A:</strong> ${question.quantityA}`;
+                quantQuantityBEl.innerHTML = `<strong>Quantity B:</strong> ${question.quantityB}`;
+                question.options.forEach((optionText) => {
+                    const button = document.createElement('button');
+                    button.textContent = optionText; 
+                    button.dataset.value = optionText; 
+                    button.classList.add('option-button');
+                    button.addEventListener('click', () => {
+                        if(selectedQuantOption) selectedQuantOption.classList.remove('selected');
+                        button.classList.add('selected');
+                        selectedQuantOption = button;
+                    });
+                    quantOptionsContainer.appendChild(button);
+                });
+            } else { 
+                question.options.forEach((optionText, i) => {
+                    const button = document.createElement('button');
+                    const prefix = `(${String.fromCharCode(65 + i)}) `; 
+                    button.textContent = prefix + optionText;
+                    button.dataset.value = optionText; 
+                    button.classList.add('option-button');
+                    button.addEventListener('click', () => {
+                        if(selectedQuantOption) selectedQuantOption.classList.remove('selected');
+                        button.classList.add('selected');
+                        selectedQuantOption = button;
+                    });
+                    quantOptionsContainer.appendChild(button);
+                });
+            }
+            
+            quantExplanationContainer.classList.add('hidden');
+            quantFeedback.textContent = '';
+            quantFeedback.className = 'text-center font-medium p-2 rounded-md mb-4';
+            quantProgressText.textContent = `Question ${index + 1} of ${quantitativeData.length}`;
+            
+            submitQuantButton.disabled = false;
+            quantOptionsContainer.querySelectorAll('.option-button').forEach(el => {
+                el.classList.remove('correct', 'incorrect', 'selected');
+                el.disabled = false;
+            });
+        }
+
+        function handleSubmitQuantAnswer() {
+            const question = quantitativeData[currentQuantIndex];
+            let isCorrect = false;
+            quantFeedback.className = 'text-center font-medium p-2 rounded-md mb-4';
+
+            if (selectedQuantOption) {
+                if (question.type === "quantitative_comparison") {
+                    isCorrect = selectedQuantOption.dataset.value === question.correctAnswer;
+                } else { 
+                    isCorrect = selectedQuantOption.dataset.value === question.correctAnswer;
+                }
+                
+                selectedQuantOption.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+                if (!isCorrect) {
+                    quantOptionsContainer.querySelectorAll('.option-button').forEach(opt => {
+                        const valueToCompare = question.type === "quantitative_comparison" ? opt.dataset.value : opt.dataset.value;
+                        if (valueToCompare === question.correctAnswer) {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            } else {
+                quantFeedback.textContent = "Please select an option.";
+                quantFeedback.classList.add('text-red-600'); return;
+            }
+
+            quantFeedback.textContent = isCorrect ? "Correct!" : "Incorrect.";
+            quantFeedback.classList.add(isCorrect ? 'text-green-600' : 'text-red-600', 'bg-opacity-20', isCorrect ? 'bg-green-100' : 'bg-red-100');
+            
+            quantExplanationText.innerHTML = question.explanation.replace(/\n/g, '<br>');
+            quantExplanationContainer.classList.remove('hidden');
+            
+            submitQuantButton.disabled = true;
+            quantOptionsContainer.querySelectorAll('.option-button').forEach(el => el.disabled = true);
+        }
+
+        // Verbal Reasoning Functions
+        function displayVerbalQuestion(index) {
+            if (!verbalData || verbalData.length === 0) return;
+            const question = verbalData[index];
+            verbalQuestionType.textContent = `Type: ${question.type}`;
+            
+            let questionHtml = question.question;
+            if (question.blanks === 1) {
+                questionHtml = question.question.replace("______", `<span class="font-bold text-indigo-600">[BLANK]</span>`);
+            } else if (question.blanks === 2) {
+                questionHtml = question.question.replace("(i)______", `<span class="font-bold text-indigo-600">[BLANK i]</span>`)
+                                               .replace("(ii)______", `<span class="font-bold text-indigo-600">[BLANK ii]</span>`);
+            }
+            verbalQuestionText.innerHTML = questionHtml;
+            
+            verbalOptionsContainer.innerHTML = '';
+            selectedVerbalOptions = [];
+
+            if (question.type === "Text Completion" && question.blanks === 1) {
+                question.options.forEach((optionText, i) => {
+                    const button = document.createElement('button');
+                    const prefix = `(${String.fromCharCode(65 + i)}) `;
+                    button.textContent = prefix + optionText.replace(/^\([A-E]\)\s*/, ''); // Remove existing prefix if any before adding new
+                    button.dataset.value = optionText.replace(/^\([A-E]\)\s*/, ''); // Store raw value
+                    button.classList.add('option-button');
+                    button.addEventListener('click', () => {
+                        if(selectedVerbalOptions.length > 0 && selectedVerbalOptions[0] === button.dataset.value) { 
+                            button.classList.remove('selected');
+                            selectedVerbalOptions = [];
+                        } else {
+                           verbalOptionsContainer.querySelectorAll('.option-button.selected').forEach(b => b.classList.remove('selected'));
+                           button.classList.add('selected');
+                           selectedVerbalOptions = [button.dataset.value];
+                        }
+                    });
+                    verbalOptionsContainer.appendChild(button);
+                });
+            } else if (question.type === "Text Completion" && question.blanks === 2) {
+                let blankCounter = 0;
+                for (const blankKey in question.options) { 
+                    const currentBlankIndex = blankCounter;
+                    const blankLabel = document.createElement('p');
+                    blankLabel.textContent = `For Blank (${currentBlankIndex === 0 ? 'i' : 'ii'}):`;
+                    blankLabel.classList.add('font-medium', 'mb-1', 'mt-3', 'text-gray-700');
+                    verbalOptionsContainer.appendChild(blankLabel);
+
+                    question.options[blankKey].forEach((optionText, i) => {
+                        const button = document.createElement('button');
+                        const prefix = `(${String.fromCharCode(65 + i)}) `;
+                        button.textContent = prefix + optionText.replace(/^\([A-F]\)\s*/, '');
+                        button.dataset.value = optionText.replace(/^\([A-F]\)\s*/, '');
+                        button.classList.add('option-button');
+                        button.dataset.blank = currentBlankIndex;
+                        button.addEventListener('click', () => {
+                            verbalOptionsContainer.querySelectorAll(`.option-button[data-blank="${currentBlankIndex}"].selected`).forEach(b => b.classList.remove('selected'));
+                            button.classList.add('selected');
+                            
+                            while(selectedVerbalOptions.length <= currentBlankIndex) {
+                                selectedVerbalOptions.push(null);
+                            }
+                            selectedVerbalOptions[currentBlankIndex] = button.dataset.value;
+                        });
+                        verbalOptionsContainer.appendChild(button);
+                    });
+                    blankCounter++;
+                }
+            } else if (question.type === "Sentence Equivalence") {
+                 question.options.forEach((optionText, i) => {
+                    const button = document.createElement('button');
+                     const prefix = `(${String.fromCharCode(65 + i)}) `;
+                    button.textContent = prefix + optionText;
+                    button.dataset.value = optionText;
+                    button.classList.add('option-button');
+                    button.addEventListener('click', () => {
+                        if (button.classList.contains('selected')) {
+                            button.classList.remove('selected');
+                            selectedVerbalOptions = selectedVerbalOptions.filter(opt => opt !== button.dataset.value);
+                        } else {
+                            if (selectedVerbalOptions.length < 2) {
+                                button.classList.add('selected');
+                                selectedVerbalOptions.push(button.dataset.value);
+                            } else {
+                                verbalFeedback.textContent = "You can only select two options for Sentence Equivalence.";
+                                verbalFeedback.className = 'text-center font-medium p-2 rounded-md mb-4 text-yellow-600 bg-yellow-100';
+                                setTimeout(() => { verbalFeedback.textContent = ''; verbalFeedback.className = 'text-center font-medium p-2 rounded-md mb-4';}, 3000);
+                            }
+                        }
+                    });
+                    verbalOptionsContainer.appendChild(button);
+                });
+            }
+            
+            verbalExplanationContainer.classList.add('hidden');
+            verbalFeedback.textContent = '';
+            verbalFeedback.className = 'text-center font-medium p-2 rounded-md mb-4';
+            verbalProgressText.textContent = `Question ${index + 1} of ${verbalData.length}`;
+
+            submitVerbalButton.disabled = false;
+            verbalOptionsContainer.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('correct', 'incorrect', 'selected');
+                btn.disabled = false;
+            });
+        }
+
+        function handleSubmitVerbalAnswer() {
+            const question = verbalData[currentVerbalIndex];
+            let isCorrect = false;
+            verbalFeedback.className = 'text-center font-medium p-2 rounded-md mb-4';
+
+            if (question.type === "Text Completion" && question.blanks === 1) {
+                if (selectedVerbalOptions.length === 1) {
+                    isCorrect = selectedVerbalOptions[0].replace(/^\([A-E]\)\s*/, '') === question.correctAnswer[0].replace(/^\([A-E]\)\s*/, '');
+                    const selectedButton = Array.from(verbalOptionsContainer.querySelectorAll('.option-button.selected'))[0];
+                    if (selectedButton) selectedButton.classList.add(isCorrect ? 'correct' : 'incorrect');
+                     if (!isCorrect) {
+                        const correctButton = Array.from(verbalOptionsContainer.querySelectorAll('.option-button')).find(b => b.dataset.value.replace(/^\([A-E]\)\s*/, '') === question.correctAnswer[0].replace(/^\([A-E]\)\s*/, ''));
+                        if (correctButton) correctButton.classList.add('correct');
+                    }
+                } else {
+                    verbalFeedback.textContent = "Please select one option.";
+                    verbalFeedback.classList.add('text-red-600'); return;
+                }
+            } else if (question.type === "Sentence Equivalence") {
+                if (selectedVerbalOptions.length === 2) {
+                    const correctAnswersSet = new Set(question.correctAnswer.map(ans => ans.replace(/^\([A-F]\)\s*/, '')));
+                    const selectedAnswersSet = new Set(selectedVerbalOptions.map(opt => opt.replace(/^\([A-F]\)\s*/, '')));
+                    isCorrect = correctAnswersSet.size === selectedAnswersSet.size && 
+                                [...selectedAnswersSet].every(opt => correctAnswersSet.has(opt));
+                    
+                    verbalOptionsContainer.querySelectorAll('.option-button.selected').forEach(button => {
+                        button.classList.add(correctAnswersSet.has(button.dataset.value.replace(/^\([A-F]\)\s*/, '')) ? 'correct' : 'incorrect');
+                    });
+                     if (!isCorrect) { 
+                        question.correctAnswer.forEach(ans => {
+                            const ansValue = ans.replace(/^\([A-F]\)\s*/, '');
+                            const correctButton = Array.from(verbalOptionsContainer.querySelectorAll('.option-button')).find(b => b.dataset.value.replace(/^\([A-F]\)\s*/, '') === ansValue && !b.classList.contains('selected'));
+                            if (correctButton) correctButton.classList.add('correct');
+                        });
+                    }
+                } else {
+                    verbalFeedback.textContent = "Please select two options.";
+                    verbalFeedback.classList.add('text-red-600'); return;
+                }
+            } else if (question.type === "Text Completion" && question.blanks === 2) {
+                 if (selectedVerbalOptions.length === 2 && selectedVerbalOptions.every(opt => opt !== null)) {
+                    const correctAns1 = question.correctAnswer[0].replace(/^\([A-F]\)\s*/, '');
+                    const correctAns2 = question.correctAnswer[1].replace(/^\([A-F]\)\s*/, '');
+                    const selectedAns1 = selectedVerbalOptions[0] ? selectedVerbalOptions[0].replace(/^\([A-F]\)\s*/, '') : null;
+                    const selectedAns2 = selectedVerbalOptions[1] ? selectedVerbalOptions[1].replace(/^\([A-F]\)\s*/, '') : null;
+                    isCorrect = selectedAns1 === correctAns1 && selectedAns2 === correctAns2;
+                    
+                    const selectedBtn0 = verbalOptionsContainer.querySelector(`.option-button[data-blank="0"].selected`);
+                    const selectedBtn1 = verbalOptionsContainer.querySelector(`.option-button[data-blank="1"].selected`);
+
+                    if (selectedBtn0) selectedBtn0.classList.add(selectedBtn0.dataset.value === correctAns1 ? 'correct' : 'incorrect');
+                    if (selectedBtn1) selectedBtn1.classList.add(selectedBtn1.dataset.value === correctAns2 ? 'correct' : 'incorrect');
+
+                    if (!isCorrect) { 
+                       if (selectedBtn0 && selectedBtn0.dataset.value !== correctAns1) {
+                            const cBtn0 = Array.from(verbalOptionsContainer.querySelectorAll(`.option-button[data-blank="0"]`)).find(b => b.dataset.value === correctAns1);
+                            if (cBtn0) cBtn0.classList.add('correct');
+                       }
+                       if (selectedBtn1 && selectedBtn1.dataset.value !== correctAns2) {
+                            const cBtn1 = Array.from(verbalOptionsContainer.querySelectorAll(`.option-button[data-blank="1"]`)).find(b => b.dataset.value === correctAns2);
+                            if (cBtn1) cBtn1.classList.add('correct');
+                       }
+                    }
+                } else {
+                    verbalFeedback.textContent = "Please select an option for each blank.";
+                    verbalFeedback.classList.add('text-red-600'); return;
+                }
+            }
+
+            verbalFeedback.textContent = isCorrect ? "Correct!" : "Incorrect.";
+            verbalFeedback.classList.add(isCorrect ? 'text-green-600' : 'text-red-600', 'bg-opacity-20', isCorrect ? 'bg-green-100' : 'bg-red-100');
+            
+            verbalExplanationText.innerHTML = question.explanation.replace(/\n/g, '<br>');
+            verbalExplanationContainer.classList.remove('hidden');
+
+            submitVerbalButton.disabled = true;
+            verbalOptionsContainer.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
+        }
+
+
+        // Calculator Functions
+        function updateCalculatorDisplay() {
+            calculatorDisplay.textContent = expressionString || currentDisplayValue; 
+        }
+
+        function inputDigit(digit) {
+            if (waitingForSecondOperand) { 
+                currentDisplayValue = digit;
+                waitingForSecondOperand = false;
+            } else { 
+                currentDisplayValue = currentDisplayValue === '0' ? digit : currentDisplayValue + digit;
+            }
+             expressionString = (expressionString === '0' && digit !== '.') ? digit : expressionString + digit;
+        }
+
+        function inputDecimal() {
+            if (!currentDisplayValue.includes('.')) {
+                currentDisplayValue += '.';
+                expressionString += '.';
+            }
+             if (waitingForSecondOperand) { 
+                currentDisplayValue = '0.';
+                expressionString += '0.'; 
+                waitingForSecondOperand = false;
+            }
+        }
+        
+        function handleOperator(nextOperator) {
+            if (currentDisplayValue === 'Error') return;
+
+            if (nextOperator === 'sqrt') {
+                try {
+                    let valueToSqrt = eval(sanitizeExpression(expressionString));
+                    if (valueToSqrt >= 0) {
+                        const result = Math.sqrt(valueToSqrt);
+                        currentDisplayValue = String(parseFloat(result.toFixed(10)));
+                        expressionString = currentDisplayValue; 
+                        waitingForSecondOperand = false; 
+                    } else {
+                        currentDisplayValue = 'Error';
+                        expressionString = 'Error';
+                    }
+                } catch (e) {
+                    currentDisplayValue = 'Error';
+                    expressionString = 'Error';
+                }
+                updateCalculatorDisplay();
+                return;
+            }
+            
+            const lastChar = expressionString.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) { 
+                expressionString = expressionString.slice(0, -1) + nextOperator;
+            } else {
+                 expressionString += nextOperator;
+            }
+            
+            currentDisplayValue = '0'; 
+            waitingForSecondOperand = true; 
+        }
+        
+        function sanitizeExpression(expr) {
+            return String(expr).replace(/[^-()\d/*+.]/g, '');
+        }
+
+        function calculate() {
+            if (expressionString === '' || currentDisplayValue === 'Error') return;
+            try {
+                let tempExpression = expressionString;
+                let openP = (tempExpression.match(/\(/g) || []).length;
+                let closeP = (tempExpression.match(/\)/g) || []).length;
+                while (openP > closeP) { 
+                    tempExpression += ')';
+                    closeP++;
+                }
+
+                const result = eval(sanitizeExpression(tempExpression));
+                if (isNaN(result) || !isFinite(result)) {
+                    currentDisplayValue = 'Error';
+                    expressionString = 'Error';
+                } else {
+                    currentDisplayValue = String(parseFloat(result.toFixed(10)));
+                    expressionString = currentDisplayValue; 
+                }
+                waitingForSecondOperand = false; 
+            } catch (e) {
+                currentDisplayValue = 'Error';
+                expressionString = 'Error';
+            }
+        }
+
+        function resetCalculator() {
+            currentDisplayValue = '0';
+            expressionString = '0';
+            waitingForSecondOperand = false;
+        }
+
+        function negateValue() {
+            if (currentDisplayValue === 'Error' || expressionString === 'Error') return;
+            
+            if (currentDisplayValue !== '0' && currentDisplayValue !== '') {
+                const num = parseFloat(currentDisplayValue);
+                if (!isNaN(num)) {
+                    const negatedNumStr = String(num * -1);
+                    if (expressionString.endsWith(currentDisplayValue)) {
+                        expressionString = expressionString.substring(0, expressionString.length - currentDisplayValue.length) + negatedNumStr;
+                    } else { 
+                         if (expressionString === '0' || ['+', '-', '*', '/','('].includes(expressionString.slice(-1))) {
+                            expressionString += `(${negatedNumStr})`; 
+                         } else {
+                            expressionString = negatedNumStr;
+                         }
+                    }
+                    currentDisplayValue = negatedNumStr;
+                }
+            } else if (expressionString !== '0' && expressionString !== '') {
+                 const lastChar = expressionString.slice(-1);
+                 if (['+', '-', '*', '/','('].includes(lastChar)) {
+                    expressionString += '(-';
+                 } else { 
+                    expressionString = `-(${expressionString})`;
+                 }
+                 currentDisplayValue = '0'; 
+            }
+        }
+        
+        function handleParenthesis(value) {
+            if (currentDisplayValue === 'Error') return;
+            if (expressionString === '0' && value === '(') {
+                expressionString = '(';
+            } else {
+                const lastChar = expressionString.slice(-1);
+                if (!['+', '-', '*', '/','('].includes(lastChar) && value === '(' && !isNaN(parseFloat(lastChar))) {
+                     expressionString += '*('; 
+                } else {
+                    expressionString += value;
+                }
+            }
+            currentDisplayValue = '0'; 
+            waitingForSecondOperand = false; 
+        }
+
+        function memoryClear() { memoryValue = 0; }
+        function memoryRecall() {
+            const memStr = String(memoryValue);
+            currentDisplayValue = memStr;
+            if (waitingForSecondOperand || expressionString === '0' || ['+', '-', '*', '/','('].includes(expressionString.slice(-1))) {
+                 expressionString += memStr;
+            } else {
+                 expressionString += memStr;
+            }
+            waitingForSecondOperand = false;
+        }
+        function memoryAdd() {
+            try {
+                let valueToEvaluate = expressionString;
+                let openP = (valueToEvaluate.match(/\(/g) || []).length;
+                let closeP = (valueToEvaluate.match(/\)/g) || []).length;
+                while (openP > closeP) { valueToEvaluate += ')'; closeP++; }
+
+                const valToMem = eval(sanitizeExpression(valueToEvaluate)); 
+                if (!isNaN(valToMem)) memoryValue += valToMem;
+            } catch (e) { /* ignore */ }
+        }
+        function memorySubtract() {
+             try {
+                let valueToEvaluate = expressionString;
+                let openP = (valueToEvaluate.match(/\(/g) || []).length;
+                let closeP = (valueToEvaluate.match(/\)/g) || []).length;
+                while (openP > closeP) { valueToEvaluate += ')'; closeP++; }
+
+                const valToMem = eval(sanitizeExpression(valueToEvaluate)); 
+                if (!isNaN(valToMem)) memoryValue -= valToMem;
+            } catch (e) { /* ignore */ }
+        }
+
+        calculatorButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const { action, value } = button.dataset;
+
+                if (currentDisplayValue === 'Error' && action !== 'clear') return;
+
+                if (action === 'number') inputDigit(value);
+                else if (action === 'decimal') inputDecimal();
+                else if (action === 'operator') handleOperator(value);
+                else if (action === 'calculate') calculate();
+                else if (action === 'clear') resetCalculator();
+                else if (action === 'negate') negateValue();
+                else if (action === 'parenthesis') handleParenthesis(value);
+                else if (action === 'memory-clear') memoryClear();
+                else if (action === 'memory-recall') memoryRecall();
+                else if (action === 'memory-add') memoryAdd();
+                else if (action === 'memory-subtract') memorySubtract();
+                
+                updateCalculatorDisplay();
+            });
+        });
+
+        toggleCalculatorButton.addEventListener('click', () => {
+            const isVisible = calculatorPanel.classList.contains('visible');
+            calculatorPanel.classList.toggle('visible');
+            toggleCalculatorButton.textContent = isVisible ? '🧮 Show Calculator' : '🧮 Hide Calculator';
+        });
+
+
+        // --- Event Listeners ---
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => setActiveSection(button.dataset.target));
+        });
+
+        submitQuantButton.addEventListener('click', handleSubmitQuantAnswer);
+        nextQuantButton.addEventListener('click', () => {
+            currentQuantIndex = (currentQuantIndex + 1) % quantitativeData.length;
+            displayQuantQuestion(currentQuantIndex);
+        });
+        prevQuantButton.addEventListener('click', () => {
+            currentQuantIndex = (currentQuantIndex - 1 + quantitativeData.length) % quantitativeData.length;
+            displayQuantQuestion(currentQuantIndex);
+        });
+
+        // Verbal Listeners
+        submitVerbalButton.addEventListener('click', handleSubmitVerbalAnswer);
+        nextVerbalButton.addEventListener('click', () => {
+            currentVerbalIndex = (currentVerbalIndex + 1) % verbalData.length;
+            displayVerbalQuestion(currentVerbalIndex);
+        });
+        prevVerbalButton.addEventListener('click', () => {
+            currentVerbalIndex = (currentVerbalIndex - 1 + verbalData.length) % verbalData.length;
+            displayVerbalQuestion(currentVerbalIndex);
+        });
+
+
+        // --- Initialization ---
+        currentYearSpan.textContent = new Date().getFullYear();
+        setActiveSection('home');
+        if (quantitativeData.length > 0) displayQuantQuestion(currentQuantIndex);
+        if (verbalData.length > 0) displayVerbalQuestion(currentVerbalIndex);
+        updateCalculatorDisplay(); 
+
+    </script>
+</body>
+</html>
