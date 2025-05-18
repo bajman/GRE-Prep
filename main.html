@@ -250,7 +250,7 @@
                 <h2 class="text-2xl font-semibold text-indigo-600 mb-6 text-center">Quantitative Reasoning Practice</h2>
                 
                 <div class="open-calculator-btn-container">
-                    <button id="toggle-calculator-button" class="action-button">🧮 Show Calculator</button>
+                    <button id="toggle-calculator-button" class="action-button" aria-label="Toggle Calculator">🧮 Show Calculator</button>
                 </div>
                 
                 <div class="quantitative-layout">
@@ -469,7 +469,18 @@
                 explanation: "Let d be the distance between City A and City B. Time from A to B = d/50. Time from B to A = d/40. Total time = d/50 + d/40 = 9 hours. To solve for d, find a common denominator: (4d + 5d) / 200 = 9. So, 9d / 200 = 9. This means 9d = 1800. Therefore, d = 200 miles."
             }
         ];
-        
+
+        // Add 500 placeholder quantitative questions
+        for (let i = 1; i <= 500; i++) {
+            quantitativeData.push({
+                questionText: `Additional Quant Question ${i}`,
+                type: "multiple_choice",
+                options: ["Option A", "Option B", "Option C", "Option D"],
+                correctAnswer: "Option A",
+                explanation: "Placeholder explanation."
+            });
+        }
+
         const verbalData = [
             // Original 3 Questions
             {
@@ -557,6 +568,24 @@
                 explanation: "The word 'Despite' signals a contrast. If users later found the software intuitive and powerful, their initial reaction must have been negative or doubtful. 'Skepticism' (doubt as to the truth of something) and 'disbelief' (inability or refusal to accept that something is true or real) fit this context."
             }
         ];
+
+        // Add 500 placeholder verbal questions
+        for (let i = 1; i <= 500; i++) {
+            verbalData.push({
+                type: "Text Completion",
+                question: `Additional Verbal Question ${i}`,
+                blanks: 1,
+                options: [
+                    "(A) Option 1",
+                    "(B) Option 2",
+                    "(C) Option 3",
+                    "(D) Option 4",
+                    "(E) Option 5"
+                ],
+                correctAnswer: ["(A) Option 1"],
+                explanation: "Placeholder explanation."
+            });
+        }
 
 
         // --- DOM Elements ---
