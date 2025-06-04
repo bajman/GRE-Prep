@@ -533,6 +533,57 @@
                     blank_i: ["(A) augment", "(B) curtail", "(C) stabilize"],
                     blank_ii: ["(D) approbation", "(E) indifference", "(F) dismay"]
                 },
+        // Programmatically extend datasets with placeholder questions
+        for (let i = 1; i <= 500; i++) {
+            quantitativeData.push({
+                questionText: `What is ${i} + ${i}?`,
+                type: "multiple_choice",
+                options: [
+                    `${2 * i}`,
+                    `${2 * i + 1}`,
+                    `${2 * i - 1}`,
+                    `${2 * i + 2}`,
+                    `${2 * i - 2}`
+                ],
+                correctAnswer: `${2 * i}`,
+                explanation: `Adding ${i} and ${i} equals ${2 * i}.`
+            });
+        }
+
+        for (let i = 1; i <= 500; i++) {
+            if (i % 2 === 0) {
+                verbalData.push({
+                    type: "Sentence Equivalence",
+                    question: `Placeholder sentence ${i}: select two words with similar meanings.`,
+                    options: [
+                        "happy",
+                        "joyful",
+                        "sad",
+                        "elated",
+                        "miserable",
+                        "glad"
+                    ],
+                    correctAnswer: ["happy", "joyful"],
+                    explanation: "This is a placeholder explanation."
+                });
+            } else {
+                verbalData.push({
+                    type: "Text Completion",
+                    question: `Placeholder text completion ${i}. The cat was _____.`,
+                    blanks: 1,
+                    options: [
+                        "(A) small",
+                        "(B) big",
+                        "(C) fast",
+                        "(D) slow",
+                        "(E) calm"
+                    ],
+                    correctAnswer: ["(A) small"],
+                    explanation: "This is a placeholder explanation."
+                });
+            }
+        }
+
                 correctAnswer: ["(B) curtail", "(F) dismay"],
                 explanation: "If funding is cut due to 'budget constraints,' the appropriate word for blank (i) is 'curtail' (to reduce or restrict). This action would likely cause 'dismay' (consternation and distress) from residents who rely on libraries, fitting blank (ii)."
             },
